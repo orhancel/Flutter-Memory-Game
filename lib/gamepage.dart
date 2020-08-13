@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 
 class GamePage extends StatelessWidget {
+  String difficulty;
+
+  GamePage(this.difficulty);
   @override
   Widget build(BuildContext context) {
     var title = "Memory Card";
@@ -12,12 +15,14 @@ class GamePage extends StatelessWidget {
         title: Text(title),
         backgroundColor: Colors.yellow[700],
       ),
-      body: MemoryGameMainPage(),
+      body: MemoryGameMainPage(difficulty),
     );
   }
 }
 
 class MemoryGameMainPage extends StatefulWidget {
+  String difficulty;
+  MemoryGameMainPage(this.difficulty);
   @override
   _MemoryGameMainPageState createState() => _MemoryGameMainPageState();
 }
@@ -64,7 +69,14 @@ class _MemoryGameMainPageState extends State<MemoryGameMainPage> {
   void initState() {
     listImages.shuffle();
     initKeys();
-    counter = 30;
+    if (widget.difficulty == "Easy") {
+      counter = 180;
+    } else if (widget.difficulty == "Medium") {
+      counter = 120;
+    } else {
+      counter = 60;
+    }
+
     if (timer != null) {
       timer.cancel();
     } else {
@@ -91,7 +103,7 @@ class _MemoryGameMainPageState extends State<MemoryGameMainPage> {
                             Navigator.of(dialogContext).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        GamePage()));
+                                        GamePage(widget.difficulty)));
                           },
                           child: Text("Try Again")),
                       FlatButton(
@@ -165,7 +177,8 @@ class _MemoryGameMainPageState extends State<MemoryGameMainPage> {
                                               MaterialPageRoute(
                                                   builder:
                                                       (BuildContext context) =>
-                                                          GamePage()),
+                                                          GamePage(widget
+                                                              .difficulty)),
                                               (route) => route.isFirst);
                                     },
                                     child: Text("Play Again")),
@@ -195,7 +208,12 @@ class _MemoryGameMainPageState extends State<MemoryGameMainPage> {
                         imageStates.forEach((element) {
                           if (element.currentState != null &&
                               !element.currentState.isFront) {
-                            element.currentState.toggleCard();
+                            //element.currentState.toggleCard();
+                            Timer(Duration(milliseconds: 200), () {
+                              element.currentState.toggleCard();
+                              //print("print after every seconds");
+                            });
+                            //print("call");
                           }
                         });
                       }
@@ -245,7 +263,11 @@ class _MemoryGameMainPageState extends State<MemoryGameMainPage> {
                   ),
                 ),
               );
-            })
+            }),
+        Text(
+          "${widget.difficulty}",
+          style: TextStyle(fontSize: 25),
+        ),
       ],
     );
   }
